@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRUT vs Direct Sale Tax Analysis</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+        }
+        
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 2.2em;
+            font-weight: 700;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #7f8c8d;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .section {
+            background: linear-gradient(145deg, #f8f9fa, #e9ecef);
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.05);
+        }
+        
+        .section h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.4em;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+        }
+        
+        .input-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #34495e;
+            font-size: 0.95em;
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e1e8ed;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: all 0.3s ease;
+            background: white;
+            box-sizing: border-box;
+        }
+        
+        input:focus, select:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+        }
+        
+        .calculate-btn {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 25px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin: 20px 0;
+            display: block;
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .calculate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(52, 152, 219, 0.3);
+        }
+        
+        .results {
+            background: linear-gradient(145deg, #ffffff, #f8f9fa);
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.05);
+            margin-top: 30px;
+        }
+        
+        .results h2 {
+            color: #2c3e50;
+            margin-bottom: 25px;
+            font-size: 1.6em;
+            text-align: center;
+        }
+        
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+        }
+        
+        .scenario {
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            transition: all 0.3s ease-in-out;
+        }
+        
+        /* Red style for the less favorable outcome */
+        .outcome-worse {
+            background: linear-gradient(145deg, #fee2e2, #fecaca);
+            border: 2px solid #ef4444;
+        }
+        
+        /* Green style for the better outcome */
+        .outcome-better {
+            background: linear-gradient(145deg, #dcfce7, #bbf7d0);
+            border: 2px solid #22c55e;
+        }
+        
+        .scenario h3 {
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+        
+        .metric {
+            margin-bottom: 12px;
+            padding: 8px;
+            background: rgba(255,255,255,0.7);
+            border-radius: 6px;
+        }
+        
+        .metric-label {
+            font-weight: 600;
+            color: #374151;
+        }
+        
+        .metric-value {
+            font-size: 1.1em;
+            font-weight: 700;
+        }
+        
+        .savings-highlight {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            margin-top: 20px;
+        }
+        
+        .savings-highlight h3 {
+            margin: 0 0 10px 0;
+            font-size: 1.4em;
+        }
+        
+        .savings-amount {
+            font-size: 2em;
+            font-weight: 700;
+        }
+        
+        .assumptions {
+            background: linear-gradient(145deg, #fef3c7, #fde68a);
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 20px;
+            border-left: 5px solid #f59e0b;
+        }
+        
+        .assumptions h3 {
+            color: #92400e;
+            margin-bottom: 15px;
+        }
+        
+        .assumptions ul {
+            color: #92400e;
+            line-height: 1.6;
+            padding-left: 20px;
+        }
+        
+        .tooltip {
+            position: relative;
+            display: inline-block;
+            cursor: help;
+            margin-left: 5px;
+        }
+        
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 300px;
+            background-color: #555;
+            color: #fff;
+            text-align: left;
+            border-radius: 6px;
+            padding: 10px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -150px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 0.85em;
+            line-height: 1.4;
+        }
+        
+        .tooltip .tooltiptext::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: #555 transparent transparent transparent;
+        }
+        
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+        
+        .info-icon {
+            background: #3498db;
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            font-size: 12px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        @media (max-width: 992px) {
+            .comparison-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>CRUT vs Direct Sale Tax Analysis</h1>
+        <p class="subtitle">Compare tax implications of selling stock directly vs transferring to a Charitable Remainder Unitrust</p>
+        
+        <div class="grid">
+            <div class="section">
+                <h2>Stock Position Details</h2>
+                
+                <div class="input-group">
+                    <label for="stockValue">Current Stock Value ($)
+                        <span class="tooltip">
+                            <span class="info-icon">i</span>
+                            <span class="tooltiptext">Fair Market Value (FMV) of the investment at the time it's placed in the CRUT. This is used as the basis for calculating the charitable deduction.</span>
+                        </span>
+                    </label>
+                    <input type="number" id="stockValue" value="1000000" step="1000">
+                </div>
+                
+                <div class="input-group">
+                    <label for="costBasis">Cost Basis ($)
+                        <span class="tooltip">
+                            <span class="info-icon">i</span>
+                            <span class="tooltiptext">Original purchase price plus any improvements. The difference between current value and cost basis determines the capital gain if sold directly.</span>
+                        </span>
+                    </label>
+                    <input type="number" id="costBasis" value="100000" step="1000">
+                </div>
+                
+                <div class="input-group">
+                    <label for="holdingPeriod">Holding Period
+                        <span class="tooltip">
+                            <span class="info-icon">i</span>
+                            <span class="tooltiptext">Assets held longer than 1 year qualify for preferential long-term capital gains rates. Short-term gains are taxed as ordinary income.</span>
+                        </span>
+                    </label>
+                    <select id="holdingPeriod">
+                        <option value="long">Long-term (>1 year)</option>
+                        <option value="short">Short-term (≤1 year)</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="section">
+                <h2>Tax Parameters</h2>
+                
+                <div class="input-group">
+                    <label for="federalCapGains">Federal Cap Gains Rate (%)
+                        <span class="tooltip">
+                            <span class="info-icon">i</span>
+                            <span class="tooltiptext">Long-term capital gains rates: 0%, 15%, or 20% based on income. High earners typically pay 20%. This applies to direct stock sales.</span>
+                        </span>
+                    </label>
+                    <input type="number" id="federalCapGains" value="20" step="0.1" min="0" max="50">
+                </div>
+                
+                <div class="input-group">
+                    <label for="caCapGains">CA State Capital Gains Rate (%)
+                        <span class="tooltip">
+                            <span class="info-icon">i</span>
+                            <span class="tooltiptext">California taxes capital gains as ordinary income. Top rate is 13.3% including mental health tax. Applies to direct stock sales.</span>
+                        </span>
+                    </label>
+                    <input type="number" id="caCapGains" value="13.3" step="0.1" min="0" max="20">
+                </div>
+                
+                <div class="input-group">
+                    <label for="niitRate">NIIT Rate (%)
+                        <span class="tooltip">
+                            <span class="info-icon">i</span>
+                            <span class="tooltiptext">Net Investment Income Tax of 3.8% applies to high-income taxpayers (AGI > $200k single, $250k married) on investment income including capital gains.</span>
+                        </span>
+                    </label>
+                    <input type="number" id="niitRate" value="3.8" step="0.1" min="0" max="10">
+                </div>
+                
+                <div class="input-group">
+                    <label for="marginalTaxRate">Marginal Tax Rate (%)
+                        <span class="tooltip">
+                            <span class="info-icon">i</span>
+                            <span class="tooltiptext">Combined federal + state marginal tax rate used to calculate tax savings from charitable deduction. Federal charitable deduction saves taxes at this rate.</span>
+                        </span>
+                    </label>
+                    <input type="number" id="marginalTaxRate" value="50.3" step="0.1" min="0" max="60">
+                </div>
+            </div>
+            
+            <div class="section">
+                <h2>CRUT Parameters</h2>
+                
+                <div class="input-group">
+                    <label for="crutPayout">CRUT Payout Rate (%)
+                        <span class="tooltip">
+                            <span class="info-icon">i</span>
+                            <span class="tooltiptext">Annual percentage of trust value paid to beneficiary. Minimum 5%, maximum 50%. Higher payouts = lower charitable deduction. Typical range: 5-8%.</span>
+                        </span>
+                    </label>
+                    <input type="number" id="crutPayout" value="5" step="0.1" min="5" max="50">
+                </div>
+                
+                <div class="input-group">
+                    <label for="crutTerm">CRUT Term (years)
+                        <span class="tooltip">
+                            <span class="info-icon">i</span>
+                            <span class="tooltiptext">The length of time payments will be made from the trust. This can be a fixed term of up to 20 years.</span>
+                        </span>
+                    </label>
+                    <input type="number" id="crutTerm" value="20" step="1" min="1" max="20">
+                </div>
+                
+                <div class="input-group">
+                    <label for="discountRate">IRS Section 7520 Rate (%)
+                        <span class="tooltip">
+                            <span class="info-icon">i</span>
+                            <span class="tooltiptext">Monthly rate published by IRS (120% of mid-term AFR). Used to calculate present value of charitable remainder. Use a current or recent rate for accuracy.</span>
+                        </span>
+                    </label>
+                    <input type="number" id="discountRate" value="5.4" step="0.1" min="1" max="10">
+                </div>
+            </div>
+        </div>
+        
+        <button class="calculate-btn" onclick="calculateComparison()">Calculate Tax Comparison</button>
+        
+        <div class="results" id="results" style="display: none;">
+            <h2>Tax Comparison Results</h2>
+            
+            <div class="comparison-grid">
+                <div id="directSaleBox" class="scenario">
+                    <h3>Direct Sale Scenario</h3>
+                    <div class="metric">
+                        <div class="metric-label">Capital Gain:</div>
+                        <div class="metric-value" id="directCapitalGain">$0</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-label">Federal Cap Gains Tax:</div>
+                        <div class="metric-value" id="directFederalTax">$0</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-label">CA State Tax:</div>
+                        <div class="metric-value" id="directStateTax">$0</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-label">NIIT:</div>
+                        <div class="metric-value" id="directNIIT">$0</div>
+                    </div>
+                     <div class="metric">
+                        <div class="metric-label">Total Tax:</div>
+                        <div class="metric-value" id="directTotalTax">$0</div>
+                    </div>
+                    <div class="metric" style="font-weight: bold; margin-top: 15px;">
+                        <div class="metric-label">Net Proceeds:</div>
+                        <div class="metric-value" id="directNetProceeds">$0</div>
+                    </div>
+                </div>
+                
+                <div id="crutBox" class="scenario">
+                    <h3>CRUT Scenario</h3>
+                    <div class="metric">
+                        <div class="metric-label">Charitable Deduction:</div>
+                        <div class="metric-value" id="crutCharitableDeduction">$0</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-label">Tax Savings from Deduction:</div>
+                        <div class="metric-value" id="crutTaxSavings">$0</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-label">Present Value of Payments:</div>
+                        <div class="metric-value" id="crutPVPayments">$0</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-label">Tax on CRUT Payments (PV):</div>
+                        <div class="metric-value" id="crutPaymentTax">$0</div>
+                    </div>
+                    <div class="metric" style="font-weight: bold; margin-top: 15px;">
+                        <div class="metric-label">Net Present Value:</div>
+                        <div class="metric-value" id="crutNetPV">$0</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="savingsHighlight" class="savings-highlight">
+                <h3>Benefit with CRUT</h3>
+                <div class="savings-amount" id="totalSavings">$0</div>
+                <div id="savingsPercentage">0% better than direct sale</div>
+            </div>
+            
+            <div class="assumptions">
+                <h3>Key Assumptions & Notes</h3>
+                <ul>
+                    <li>CRUT eliminates immediate capital gains tax on the donated stock.</li>
+                    <li>A charitable deduction is available in the year of contribution, subject to AGI limits.</li>
+                    <li>CRUT payments are taxed according to a 4-tier system; this model uses a simplified blend for illustration.</li>
+                    <li>California does not have a state-level charitable deduction that mirrors the federal one for this purpose.</li>
+                    <li>Net Investment Income Tax (NIIT) of 3.8% is assumed to apply.</li>
+                    <li>Present value calculations use the provided IRS discount rate.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function calculateComparison() {
+            // Get input values
+            const stockValue = parseFloat(document.getElementById('stockValue').value);
+            const costBasis = parseFloat(document.getElementById('costBasis').value);
+            const federalCapGains = parseFloat(document.getElementById('federalCapGains').value) / 100;
+            const caCapGains = parseFloat(document.getElementById('caCapGains').value) / 100;
+            const niitRate = parseFloat(document.getElementById('niitRate').value) / 100;
+            const marginalTaxRate = parseFloat(document.getElementById('marginalTaxRate').value) / 100;
+            const crutPayout = parseFloat(document.getElementById('crutPayout').value) / 100;
+            const crutTerm = parseFloat(document.getElementById('crutTerm').value);
+            const discountRate = parseFloat(document.getElementById('discountRate').value) / 100;
+            
+            // --- DIRECT SALE SCENARIO ---
+            const capitalGain = stockValue - costBasis;
+            const directFederalTax = capitalGain * federalCapGains;
+            const directStateTax = capitalGain * caCapGains;
+            const directNIIT = capitalGain * niitRate;
+            const directTotalTax = directFederalTax + directStateTax + directNIIT;
+            const directNetProceeds = stockValue - directTotalTax;
+            
+            // --- CRUT SCENARIO ---
+            const effectiveTerm = crutTerm;
+            const annualPayment = stockValue * crutPayout;
+            const pvAnnuityFactor = (1 - Math.pow(1 + discountRate, -effectiveTerm)) / discountRate;
+            let pvPaymentsToBeneficiary = annualPayment * pvAnnuityFactor;
+            let charitableDeductionAmount = stockValue - pvPaymentsToBeneficiary;
+
+            if (charitableDeductionAmount < (stockValue * 0.10)) {
+                alert("Warning: The CRUT parameters result in a charitable remainder of less than 10%, which is not allowed by the IRS. The calculation will proceed for illustration, but the trust would not be valid with these terms.");
+                charitableDeductionAmount = stockValue * 0.10;
+                pvPaymentsToBeneficiary = stockValue * 0.90;
+            }
+
+            const totalTaxSavings = charitableDeductionAmount * marginalTaxRate;
+            const pvPayments = pvPaymentsToBeneficiary;
+            
+            const blendedTaxRateOnPayments = (federalCapGains + caCapGains + niitRate) * (capitalGain / stockValue) + 
+                                             (marginalTaxRate) * (costBasis / stockValue); 
+            const pvTaxOnPayments = pvPayments * blendedTaxRateOnPayments;
+            
+            const crutNetPV = totalTaxSavings + pvPayments - pvTaxOnPayments;
+            
+            // --- UPDATE UI ---
+            document.getElementById('directCapitalGain').textContent = formatCurrency(capitalGain);
+            document.getElementById('directFederalTax').textContent = formatCurrency(directFederalTax);
+            document.getElementById('directStateTax').textContent = formatCurrency(directStateTax);
+            document.getElementById('directNIIT').textContent = formatCurrency(directNIIT);
+            document.getElementById('directTotalTax').textContent = formatCurrency(directTotalTax);
+            document.getElementById('directNetProceeds').textContent = formatCurrency(directNetProceeds);
+            
+            document.getElementById('crutCharitableDeduction').textContent = formatCurrency(charitableDeductionAmount);
+            document.getElementById('crutTaxSavings').textContent = formatCurrency(totalTaxSavings);
+            document.getElementById('crutPVPayments').textContent = formatCurrency(pvPayments);
+            document.getElementById('crutPaymentTax').textContent = formatCurrency(pvTaxOnPayments);
+            document.getElementById('crutNetPV').textContent = formatCurrency(crutNetPV);
+            
+            // --- DYNAMIC COLOR CODING & FINAL HIGHLIGHT ---
+            const directSaleBox = document.getElementById('directSaleBox');
+            const crutBox = document.getElementById('crutBox');
+            
+            directSaleBox.className = 'scenario';
+            crutBox.className = 'scenario';
+            
+            if (crutNetPV > directNetProceeds) {
+                crutBox.classList.add('outcome-better'); // green
+                directSaleBox.classList.add('outcome-worse'); // red
+            } else {
+                directSaleBox.classList.add('outcome-better'); // green
+                crutBox.classList.add('outcome-worse'); // red
+            }
+
+            const totalBenefit = crutNetPV - directNetProceeds;
+            const benefitPercentage = directNetProceeds !== 0 ? (totalBenefit / directNetProceeds) * 100 : 0;
+            
+            const savingsHighlight = document.getElementById('savingsHighlight');
+            const totalSavings = document.getElementById('totalSavings');
+            const savingsPercentage = document.getElementById('savingsPercentage');
+
+            if (totalBenefit >= 0) {
+                savingsHighlight.style.background = 'linear-gradient(135deg, #10b981, #059669)';
+                totalSavings.textContent = `${formatCurrency(totalBenefit)}`;
+                savingsPercentage.textContent = `The CRUT scenario is ${benefitPercentage.toFixed(1)}% better than a direct sale.`;
+            } else {
+                savingsHighlight.style.background = 'linear-gradient(135deg, #ef4444, #b91c1c)';
+                totalSavings.textContent = `${formatCurrency(totalBenefit)}`;
+                savingsPercentage.textContent = `The CRUT scenario is ${Math.abs(benefitPercentage).toFixed(1)}% worse than a direct sale.`;
+            }
+            
+            document.getElementById('results').style.display = 'block';
+            if(window.getComputedStyle(document.getElementById('results')).display !== 'none') {
+                 document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+        
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('en-US', {
+                style: 'currency',
+                currency: 'USD',
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
+            }).format(amount);
+        }
+        
+        window.onload = function() {
+            if(document.getElementById('stockValue')) {
+                calculateComparison();
+            }
+        };
+    </script>
+</body>
+</html>
