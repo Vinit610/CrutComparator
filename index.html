@@ -285,6 +285,15 @@
         <h1>CRUT vs Direct Sale Tax Analysis</h1>
         <p class="subtitle">Compare tax implications of selling stock directly vs transferring to a Charitable Remainder Unitrust</p>
         
+        <div class="section" style="margin-bottom: 30px; background: linear-gradient(145deg, #e3f2fd, #bbdefb);">
+            <h2 style="color: #1565c0; border-color: #1976d2;">Understanding Present Value</h2>
+            <p style="color: #1565c0; font-size: 1em; line-height: 1.6; margin: 0;">
+                <strong>Present Value (PV)</strong> is the current worth of future cash flows, discounted at a specific interest rate (IRS Section 7520 rate). 
+                For example, receiving $100 in 10 years is worth less than $100 today because money has earning potential. 
+                In CRUT calculations, we use PV to determine: (1) the current value of future payments you'll receive, and (2) the current value of what the charity will eventually receive (the charitable remainder).
+            </p>
+        </div>
+        
         <div class="grid">
             <div class="section">
                 <h2>Stock Position Details</h2>
@@ -518,9 +527,27 @@
             const totalTaxSavings = charitableDeductionAmount * marginalTaxRate;
             const pvPayments = pvPaymentsToBeneficiary;
             
-            const blendedTaxRateOnPayments = (federalCapGains + caCapGains + niitRate) * (capitalGain / stockValue) + 
-                                             (marginalTaxRate) * (costBasis / stockValue); 
-            const pvTaxOnPayments = pvPayments * blendedTaxRateOnPayments;
+            // =================================================================
+            // CORRECTED TIERED TAX CALCULATION for CRUT Payments
+            // =================================================================
+            // 1. Define the tax rates for each income tier
+            const ordinaryIncomeTaxRate = marginalTaxRate;
+            const combinedCapGainsRate = federalCapGains + caCapGains + niitRate;
+            const exemptIncomeTaxRate = 0;
+
+            // 2. Define the income distribution percentages as specified
+            const ordinaryIncomePortion = 0.60;
+            const capitalGainsPortion = 0.30;
+            const exemptIncomePortion = 0.10;
+
+            // 3. Calculate the tax on the present value of each income tier
+            const taxOnOrdinary = pvPayments * ordinaryIncomePortion * ordinaryIncomeTaxRate;
+            const taxOnCapitalGains = pvPayments * capitalGainsPortion * combinedCapGainsRate;
+            const taxOnExempt = pvPayments * exemptIncomePortion * exemptIncomeTaxRate; // This will always be 0
+
+            // 4. The total Present Value of the tax is the sum of the tax on each tier
+            const pvTaxOnPayments = taxOnOrdinary + taxOnCapitalGains + taxOnExempt;
+            // =================================================================
             
             const crutNetPV = totalTaxSavings + pvPayments - pvTaxOnPayments;
             
